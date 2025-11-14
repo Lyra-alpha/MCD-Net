@@ -1,10 +1,5 @@
 # MCD-Net: A Lightweight Deep Learning Baseline for Optical-Only Moraine Segmentation
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-](https://opensource.org/licenses/MIT)
-[![Dataset](https://img.shields.io/badge/Dataset-Zenodo-green.svg)
-](https://doi.org/10.5281/zenodo.17435106)
-
 Official implementation of 
 **MCD-Net**
 , a lightweight deep learning framework for optical-only moraine segmentation, as presented in our IEEE journal paper.
