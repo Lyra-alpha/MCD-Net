@@ -18,7 +18,6 @@ The MCD Dataset contains 3,340 high-resolution image-mask pairs from Sichuan and
 : Binary segmentation (background vs. moraine body)
 - **Split**
 : 2,630 training + 293 test images
-- **Availability**: [Zenodo Dataset](https://doi.org/10.5281/zenodo.17435106)
 
 **Download the dataset from:**
  https://doi.org/10.5281/zenodo.17435106
