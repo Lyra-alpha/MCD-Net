@@ -17,7 +17,7 @@ The MCD Dataset contains 3,340 high-resolution image-mask pairs from Sichuan and
 - **Split**: 2,630 training + 293 test images
 
 **Download the dataset from:**
- https://doi.org/10.5281/zenodo.17435106
+ https://doi.org/10.5281/zenodo.18074779
 
 ## Training Steps
 1. Place the dataset downloaded from Zenodo into the `dataset` folder.
