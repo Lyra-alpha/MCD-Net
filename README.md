@@ -1,37 +1,208 @@
 # MCD-Net: A Lightweight Deep Learning Baseline for Optical-Only Moraine Segmentation
 
-Official implementation of 
-**MCD-Net**
-, a lightweight deep learning framework for optical-only moraine segmentation, as presented in our IEEE journal paper.
+Official implementation of **MCD-Net**, a lightweight deep learning framework that integrates **MobileNetV2**, **CBAM (Convolutional Block Attention Module)**, and **DeepLabV3+** decoder for moraine segmentation from optical imagery. This repository establishes the first reproducible benchmark for optical-only moraine segmentation with a novel dataset of 3,340 high-resolution annotated images.
 
-## Overview
+Dataset: [10.5281/zenodo.18074779](https://doi.org/10.5281/zenodo.18074779)  
+Pre-trained Model: `model_data/MCDNet_mobilenetv2_best.pth`
 
-MCD-Net is a lightweight deep learning baseline that integrates MobileNetV2, Convolutional Block Attention Module (CBAM), and DeepLabV3+ decoder for moraine segmentation from optical imagery. This work establishes the first reproducible benchmark for optical-only moraine segmentation with a novel dataset of 3,340 annotated high-resolution images.
+---
 
-## Dataset
+## Repository Structure
 
-The MCD Dataset contains 3,340 high-resolution image-mask pairs from Sichuan and Yunnan, China:
+```
+MCD-Net/
+├── dataset/
+│   └── Moraine_dataset/
+│       ├── JPEGImages/               # Place your .jpg images here
+│       ├── SegmentationClass/        # Place your .png masks here
+│       └── ImageSets/Segmentation/   # Auto-generated txt splits
+├── nets/                           
+│   ├── attention.py                 
+│   ├── deeplabv3_plus.py            
+│   ├── deeplabv3_training.py       
+│   └── mobilenetv2.py              
+├── utils/                           
+│   ├── callbacks.py                  
+│   ├── dataloader.py             
+│   ├── utils.py                   
+│   ├── utils_fit.py               
+│   └── utils_metrics.py          
+├── model_data/                  
+│   └── MCDNet_mobilenetv2_best.pth  
+├── logs/                            
+├── miou_out/                        
+├── img_out/                         
+├── dataset_annotation.py           
+├── train.py                       
+├── mcdnet_predictor.py            
+├── predict.py                      
+├── get_miou.py                     
+├── requirements.txt             
+└── README.md                     
+```
 
-- **Images**: 1024×1024 pixels, 0.5-2.0m resolution
-- **Classes**: Binary segmentation (background vs. moraine body)
-- **Split**: 2,630 training + 293 test images
+---
 
-**Download the dataset from:**
- https://doi.org/10.5281/zenodo.18074779
+## Installation
 
-## Training Steps
-1. Place the dataset downloaded from Zenodo into the `dataset` folder.
-2. Before training, place the label files in `dataset/Morainse_dataset/SegmentationClass` and the image files in `dataset/Morainse_dataset/JPEGImages`.
-3. Run `dataset_annotation.py` to generate the corresponding dataset split text files before training.
-4. In the `train.py` file, select the pre-trained weights you want to use (default parameters are already set).
-5. Run `train.py` to start training.
+### 1. Clone the repository
+```bash
+git clone https://github.com/Lyra-alpha/MCD-Net.git
+cd MCD-Net
+```
 
-## Prediction Steps
-This repository provides a trained pth file (`MCDNet_mobilenetv2_best.pth`). Set the relevant paths in `mcdnet_predictor.py`, then select the prediction mode in `predict.py` and run it.
-If you want to use your own trained model, please modify the relevant paths accordingly.
+### 2. Create environment & install dependencies
+```bash
+conda create -n mcdnet python=3.9 -y
+conda activate mcdnet
+pip install -r requirements.txt
+```
 
-## Reference
-https://github.com/ggyyzm/pytorch_segmentation
+### 3. Verify installation
+```bash
+python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
+```
+
+---
+
+## Environment
+
+| Requirement | Version Tested |
+|-------------|---------------|
+| Python | 3.9 |
+| PyTorch | 1.12+ |
+| CUDA | 11.6 (GPU recommended) |
+| OS | Ubuntu 20.04 / Windows 10/11 |
+
+GPU Memory: >= 6 GB VRAM (batch_size=8)  
+
+---
+
+## Dataset Preparation
+
+1. Download the **MCD Dataset** from [Zenodo](https://doi.org/10.5281/zenodo.18074779).
+2. Extract and place the files into:
+   - `dataset/Moraine_dataset/JPEGImages/` (input images, `.jpg`)
+   - `dataset/Moraine_dataset/SegmentationClass/` (label masks, `.png`)
+3. Run the annotation script to generate the data splits:
+   ```bash
+   python dataset_annotation.py
+   ```
+   This creates `train.txt`, `val.txt`, `test.txt`, and `trainval.txt` inside `dataset/Moraine_dataset/ImageSets/Segmentation/`.
+
+If you already have the split files, you can skip step 3 (but ensure they match the image filenames).
+
+---
+
+## Training
+
+### Quick Start
+```bash
+python train.py
+```
+
+### Key Configuration (in `train.py`)
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `num_classes` | 2 | Background + Moraine |
+| `backbone` | mobilenet | Only MobileNetV2 supported |
+| `use_attention` | True | Enable CBAM attention modules |
+| `downsample_factor` | 16 | Output stride (8 or 16) |
+| `Freeze_Epoch / UnFreeze_Epoch` | 100 / 200 | Two-stage training with SGD |
+| `Init_lr` | 7e-3 | Initial learning rate |
+| `batch_size` (Freeze) | 8 | Batch size during frozen backbone |
+| `batch_size` (Unfreeze) | 4 | Batch size during full training |
+
+Training outputs are saved in `logs/`:
+- `best_epoch_weights.pth` -- Best validation loss
+- `last_epoch_weights.pth` -- Final epoch
+- `loss_*.png`, `epoch_miou.png` -- Loss and mIoU curves
+
+---
+
+## Prediction
+
+### Single Image Prediction
+```bash
+python predict.py
+# Set mode = "predict" in predict.py
+# Enter image path when prompted
+```
+
+### Batch Folder Prediction (default)
+```bash
+python predict.py
+# Set mode = "dir_predict" in predict.py
+# Images from: dataset/Moraine_dataset/JPEGImages/
+# Results saved to: img_out/
+```
+
+To use your own trained model, update `model_path` in `mcdnet_predictor.py` or pass it as a keyword argument.
+
+---
+
+## Evaluation (mIoU, F1, Precision, Recall)
+
+Evaluate on the validation set:
+```bash
+python get_miou.py
+```
+
+Results saved in `miou_out/`:
+- `mIoU.png`, `mPA.png`, `Recall.png`, `Precision.png`, `F1.png`
+- `confusion_matrix.csv`
+- `PixelAccuracy.png`
+
+---
+
+## Quick Test Example
+
+```bash
+# 1. Run data splitting
+python dataset_annotation.py
+
+# 2. Start training (2 epochs for sanity check)
+#    In train.py, set: UnFreeze_Epoch = 2
+python train.py
+
+# 3. Evaluate
+python get_miou.py
+
+# 4. Predict on validation images
+#    In predict.py, set:
+#      mode = "dir_predict"
+#      dir_origin_path = "dataset/Moraine_dataset/JPEGImages"
+python predict.py
+```
+
+---
+
+## Pre-trained Model
+
+| File | Description |
+|------|-------------|
+| `model_data/MCDNet_mobilenetv2_best.pth` | Best checkpoint (provided) |
+| `model_data/mobilenet_v2.pth.tar` | ImageNet-pretrained MobileNetV2 (auto-download) |
+
+To use the pre-trained model for inference:
+```python
+from mcdnet_predictor import MCDNetPredictor
+
+predictor = MCDNetPredictor(
+    model_path='model_data/MCDNet_mobilenetv2_best.pth',
+    num_classes=2,
+    use_attention=True
+)
+```
+
+---
+
+
+## References
+
+- [DeepLabV3+ PyTorch Implementation](https://github.com/bubbliiiing/deeplabv3-plus-pytorch)
+- [CBAM: Convolutional Block Attention Module](https://arxiv.org/abs/1807.06521)
+- [MobileNetV2: Inverted Residuals and Linear Bottlenecks](https://arxiv.org/abs/1801.04381)
 
 https://github.com/bubbliiiing/deeplabv3-plus-pytorch
 
