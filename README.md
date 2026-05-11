@@ -28,10 +28,7 @@ MCD-Net/
 │   ├── utils_fit.py               
 │   └── utils_metrics.py          
 ├── model_data/                  
-│   └── MCDNet_mobilenetv2_best.pth  
-├── logs/                            
-├── miou_out/                        
-├── img_out/                         
+│   └── MCDNet_mobilenetv2_best.pth                                                                    
 ├── dataset_annotation.py           
 ├── train.py                       
 ├── mcdnet_predictor.py            
