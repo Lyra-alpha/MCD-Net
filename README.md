@@ -182,7 +182,7 @@ python predict.py
 | File | Description |
 |------|-------------|
 | `model_data/MCDNet_mobilenetv2_best.pth` | Best checkpoint (provided) |
-| `model_data/mobilenet_v2.pth.tar` | ImageNet-pretrained MobileNetV2 (auto-download) |
+| `model_data/mobilenet_v2.pth` | ImageNet-pretrained MobileNetV2 (auto-download) |
 
 To use the pre-trained model for inference:
 ```python
