@@ -88,7 +88,7 @@ GPU Memory: >= 6 GB VRAM (batch_size=8)
    ```bash
    python dataset_annotation.py
    ```
-   This creates `train.txt`, `val.txt`, `test.txt`, and `trainval.txt` inside `dataset/Moraine_dataset/ImageSets/Segmentation/`.
+   This creates `train.txt`, `val.txt`, `test.txt`, and `all.txt` inside `dataset/Moraine_dataset/ImageSets/Segmentation/`.
 
 If you already have the split files, you can skip step 3 (but ensure they match the image filenames).
 
