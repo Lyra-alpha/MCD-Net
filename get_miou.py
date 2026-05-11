@@ -25,7 +25,7 @@ if __name__ == "__main__":
     use_attention   = True  # 是否使用注意力机制
     
 
-    image_ids       = open(os.path.join(VOCdevkit_path,"Moraine_dataset/ImageSets/Segmentation/val.txt"),'r').read().splitlines() 
+    image_ids       = open(os.path.join(VOCdevkit_path,"Moraine_dataset/ImageSets/Segmentation/test.txt"),'r').read().splitlines() 
     gt_dir          = os.path.join(VOCdevkit_path,"Moraine_dataset/SegmentationClass/")
     miou_out_path   = "miou_out"
     pred_dir        = os.path.join(miou_out_path, 'detection-results')
